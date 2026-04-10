@@ -1,0 +1,19 @@
+<div class="reportes">
+  <h2>Reportes</h2>
+  <div class="filtros">
+    <label>Fecha Inicio</label>
+    <input type="date" [(ngModel)]="fechaInicio" />
+    <label>Fecha Fin</label>
+    <input type="date" [(ngModel)]="fechaFin" />
+    <button (click)="generar()">Generar</button>
+  </div>
+
+  <div *ngIf="error" class="error">{{error}}</div>
+
+  <div *ngIf="resumen" class="resumen">
+    <p><strong>Total Ventas:</strong> {{resumen.totalVentas}}</p>
+    <p><strong>Total Reembolsos:</strong> {{resumen.totalReembolsos}}</p>
+    <p><strong>Ganancia Neta:</strong> {{resumen.gananciaNeta}}</p>
+  </div>
+</div>
+<p>reportes works!</p>

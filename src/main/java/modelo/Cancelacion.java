@@ -6,12 +6,12 @@ public class Cancelacion {
     private String fechaCancelacion;
     private double montoReembolso;
     private double perdidaAgencia;
-
     private String numeroReservacion;
 
     public Cancelacion() {
     }
 
+   
     public int getIdCancelacion() {
         return idCancelacion;
     }

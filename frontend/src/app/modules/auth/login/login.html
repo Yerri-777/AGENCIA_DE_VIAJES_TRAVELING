@@ -1,0 +1,56 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <header class="login-header">
+      <div class="logo-container">
+        <img src="assets/logo.svg" alt="Logo" class="logo" />
+      </div>
+      <h1>Horizontes Sin Límites</h1>
+      <p>Bienvenido. Accede a tu panel de control.</p>
+    </header>
+
+    <form (ngSubmit)="onLogin()" class="login-form" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="username">Nombre de Usuario</label>
+        <div class="input-wrapper">
+          <input
+            id="username"
+            type="text"
+            [(ngModel)]="nombre"
+            name="nombre"
+            required
+            placeholder="Introduce tu usuario"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="input-wrapper">
+          <input
+            id="password"
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            required
+            placeholder="••••••••"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="error-container" *ngIf="errorMsg">
+        <span class="error-text">{{ errorMsg }}</span>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="isLoading || !loginForm.valid">
+        <span *ngIf="!isLoading">Acceder al Sistema</span>
+        <span *ngIf="isLoading">Verificando...</span>
+      </button>
+    </form>
+
+    <footer class="login-footer">
+      <p>Soporte Técnico: <span>soporte@horizontes.com</span></p>
+    </footer>
+  </div>
+</div>

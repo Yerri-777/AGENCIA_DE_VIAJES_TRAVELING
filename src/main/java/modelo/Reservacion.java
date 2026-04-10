@@ -7,25 +7,30 @@ public class Reservacion {
     private String fechaViaje;
     private int cantidadPasajeros;
     private double costoTotal;
-    private String estado;
+    private String estado; 
 
     private Usuario agente;
-    private PaqueteTuristico paquete;
-
+    private Paquete paquete;
     private Cliente[] pasajeros;
 
     public Reservacion() {
     }
 
-   
-    public Cliente[] getPasajeros() {
-        return pasajeros;
+    // Lógica para obtener solo los IDs para el DAO
+    public String[] getDpisPasajeros() {
+        if (pasajeros == null || pasajeros.length == 0) {
+            return null;
+        }
+        String[] dpis = new String[pasajeros.length];
+        for (int i = 0; i < pasajeros.length; i++) {
+            if (pasajeros[i] != null) {
+                dpis[i] = pasajeros[i].getDpi();
+            }
+        }
+        return dpis;
     }
 
-    public void setPasajeros(Cliente[] pasajeros) {
-        this.pasajeros = pasajeros;
-    }
-
+    
     public String getNumeroReservacion() {
         return numeroReservacion;
     }
@@ -82,24 +87,19 @@ public class Reservacion {
         this.agente = agente;
     }
 
-    public PaqueteTuristico getPaquete() {
+    public Paquete getPaquete() {
         return paquete;
     }
 
-    public String[] getDpisPasajeros() {
-        if (pasajeros == null) {
-            return null;
-        }
-
-        String[] dpis = new String[pasajeros.length];
-        for (int i = 0; i < pasajeros.length; i++) {
-          
-            dpis[i] = pasajeros[i].getDpi();
-        }
-        return dpis;
+    public void setPaquete(Paquete paquete) {
+        this.paquete = paquete;
     }
 
-    public void setPaquete(PaqueteTuristico paquete) {
-        this.paquete = paquete;
+    public Cliente[] getPasajeros() {
+        return pasajeros;
+    }
+
+    public void setPasajeros(Cliente[] pasajeros) {
+        this.pasajeros = pasajeros;
     }
 }

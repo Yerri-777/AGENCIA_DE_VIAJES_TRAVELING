@@ -1,75 +1,140 @@
 package servlet;
 
 import com.google.gson.Gson;
+import config.ConexionBD;
 import dao.ReservacionDAO;
 import modelo.Reservacion;
+import modelo.Usuario;
 import java.io.*;
+import java.util.stream.Collectors;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 @WebServlet("/reservaciones")
 public class ReservacionServlet extends HttpServlet {
 
+        /*
+         Server-side validation notes & examples for backend team
+
+         POST /reservaciones
+         - Purpose: create a new reservation (cabecera + pasajeros)
+         - Server responsibilities:
+             * Validate session (agent must be logged in).
+             * Validate required fields: paquete.id, cantidadPasajeros > 0, fechaViaje valid date, pasajeros[] present.
+             * Recompute costoTotal on server side using paquete and servicio_paquete prices to prevent client tampering.
+             * Check capacity/overbooking and reject with 409 Conflict if capacity exceeded.
+             * Generate unique reservation number (e.g. RES-00001) and return it in response.
+             * Use DB transaction: insert header, insert pasajeros, commit or rollback on error.
+
+         Expected JSON request body (example):
+         {
+             "paquete": { "id": 12 },
+             "cantidadPasajeros": 3,
+             "fechaViaje": "2026-05-21",
+             "pasajeros": [ { "nombre":"Juan Perez", "dpi":"1234567890101" }, {"nombre":"Ana", "dpi":"1010101010101"} ]
+         }
+
+         Example responses:
+         - Success (201): { "numero":"RES-00042", "mensaje":"Reservación registrada y vinculada a pasajeros" }
+         - Client error (400): { "mensaje":"Datos del paquete o pasajeros incompletos" }
+         - Unauthorized (401): { "mensaje":"Debe iniciar sesión para crear reservaciones" }
+         - Conflict (409): { "mensaje":"Capacidad del paquete insuficiente" }
+         - Server error (500): { "mensaje":"Error en registro: detalle..." }
+
+         Notes for DAO implementers:
+             - dao.crear(conn, r) should compute and persist costo_total, return generated reservation number.
+             - Use SELECT ... FOR UPDATE where needed to enforce capacity checks atomically.
+        */
+
     private final ReservacionDAO dao = new ReservacionDAO();
     private final Gson gson = new Gson();
 
-    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         configurarHeaders(resp);
         try {
             String numero = req.getParameter("numero");
-            
             if (numero != null && !numero.trim().isEmpty()) {
-                
                 Reservacion r = dao.buscarPorNumero(numero);
                 if (r != null) {
                     resp.getWriter().write(gson.toJson(r));
                 } else {
-                    enviarRespuesta(resp, HttpServletResponse.SC_NOT_FOUND, "Reservación no encontrada");
+                    enviarRespuesta(resp, 404, "Reservación no encontrada");
                 }
             } else {
-             
                 Reservacion[] lista = dao.listar();
                 resp.getWriter().write(gson.toJson(lista != null ? lista : new Reservacion[0]));
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            enviarRespuesta(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener datos: " + e.getMessage());
+            enviarRespuesta(resp, 500, "Error al obtener datos: " + e.getMessage());
         }
     }
 
-   
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         configurarHeaders(resp);
-        try (BufferedReader reader = req.getReader()) {
-            Reservacion r = gson.fromJson(reader, Reservacion.class);
 
-            if (r == null || r.getPaquete() == null) {
-                enviarRespuesta(resp, HttpServletResponse.SC_BAD_REQUEST, "Datos de reservación incompletos");
-                return;
+        // Obtenemos al usuario de la sesión para asegurar que el Agente sea el que está logueado
+        HttpSession session = req.getSession(false);
+        Usuario logueado = (session != null) ? (Usuario) session.getAttribute("usuarioLogueado") : null;
+
+        if (logueado == null) {
+            enviarRespuesta(resp, 401, "Debe iniciar sesión para crear reservaciones");
+            return;
+        }
+
+        try (Connection conn = ConexionBD.getConnection()) {
+            conn.setAutoCommit(false); // Iniciamos Transacción
+
+            try {
+                String body = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+                Reservacion r = gson.fromJson(body, Reservacion.class);
+
+                if (r == null || r.getPaquete() == null) {
+                    enviarRespuesta(resp, 400, "Datos del paquete o pasajeros incompletos");
+                    return;
+                }
+
+                // Forzamos que el agente de la reservación sea el usuario en sesión
+                r.setAgente(logueado);
+
+                // El DAO ahora inserta Cabecera y Pasajeros
+                String numeroGenerado = dao.crear(conn, r);
+
+                conn.commit(); // Si todo sale bien, guardamos
+
+                resp.setStatus(201);
+                resp.getWriter().write("{\"numero\":\"" + numeroGenerado + "\", \"mensaje\":\"Reservación registrada y vinculada a pasajeros\"}");
+            } catch (Exception e) {
+                conn.rollback(); // Si falla (ej. sobreventa), deshacemos todo
+                enviarRespuesta(resp, 500, "Error en registro: " + e.getMessage());
             }
-
-           
-            String numeroGenerado = dao.crear(r);
-
-            if (numeroGenerado != null) {
-                resp.setStatus(HttpServletResponse.SC_CREATED);
-                resp.getWriter().write("{\"numero\":\"" + numeroGenerado + "\", \"mensaje\":\"Reservación creada exitosamente\"}");
-            } else {
-                enviarRespuesta(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No se pudo generar la reservación");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            enviarRespuesta(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
+        } catch (SQLException e) {
+            enviarRespuesta(resp, 500, "Error de base de datos: " + e.getMessage());
         }
     }
 
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        configurarHeaders(resp);
+        // Este método sirve para cambiar el estado a CONFIRMADA o CANCELADA
+        String numero = req.getParameter("numero");
+        String nuevoEstado = req.getParameter("estado");
+
+        try {
+            if (numero == null || nuevoEstado == null) {
+                enviarRespuesta(resp, 400, "Faltan parámetros: numero o estado");
+                return;
+            }
+            dao.actualizarEstado(numero, nuevoEstado);
+            enviarRespuesta(resp, 200, "Estado actualizado a " + nuevoEstado);
+        } catch (Exception e) {
+            enviarRespuesta(resp, 500, e.getMessage());
+        }
+    }
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
@@ -80,9 +145,10 @@ public class ReservacionServlet extends HttpServlet {
     private void configurarHeaders(HttpServletResponse resp) {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
     }
 
     private void enviarRespuesta(HttpServletResponse resp, int status, String mensaje) throws IOException {
@@ -91,7 +157,11 @@ public class ReservacionServlet extends HttpServlet {
     }
 
     private static class ResponseMsg {
+        @SuppressWarnings("unused")
         String mensaje;
-        ResponseMsg(String m) { this.mensaje = m; }
+
+        ResponseMsg(String m) {
+            this.mensaje = m;
+        }
     }
 }

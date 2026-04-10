@@ -1,0 +1,77 @@
+.dashboard-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #f3f4f6;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #374151;
+  padding-bottom: 1rem;
+}
+
+.admin-badge {
+  background: #ef4444;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* Hero Card - Carga Masiva */
+.main-action { margin-bottom: 2rem; }
+
+.hero-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #1e293b, #0f172a);
+  padding: 2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  border: 1px solid #3b82f6;
+  transition: transform 0.2s;
+}
+
+.hero-card:hover { transform: scale(1.01); }
+
+.btn-action {
+  background: #3b82f6;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* Grid Cards */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.admin-card {
+  background: #1f2937;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  border: 1px solid #374151;
+  transition: background 0.2s;
+}
+
+.admin-card:hover { background: #374151; }
+
+.admin-summary {
+  margin-top: 3rem;
+  display: flex;
+  gap: 2rem;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.value.online { color: #10b981; font-weight: bold; }

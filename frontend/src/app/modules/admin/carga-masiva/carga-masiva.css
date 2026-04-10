@@ -1,0 +1,106 @@
+.carga-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #1f2937;
+  border-radius: 1rem;
+  color: #f3f4f6;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.card-header h2 {
+  font-size: 1.8rem;
+  color: #60a5fa;
+  margin-bottom: 0.5rem;
+}
+
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  border: 2px dashed #4b5563;
+  border-radius: 0.75rem;
+  transition: all 0.3s;
+}
+
+.upload-zone.active { border-color: #3b82f6; background: #111827; }
+
+.drop-area { cursor: pointer; text-align: center; }
+
+.upload-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+
+.file-name { color: #60a5fa; font-weight: bold; }
+
+.btn-upload {
+  background: #2563eb;
+  color: white;
+  padding: 0.75rem 2.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-upload:disabled { background: #4b5563; cursor: not-allowed; }
+
+/* Resultados */
+.resumen-cards {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  background: #111827;
+}
+
+.stat-card.success .stat-val { color: #10b981; font-size: 2rem; font-weight: bold; }
+.stat-card.danger .stat-val { color: #9ca3af; font-size: 2rem; font-weight: bold; }
+.stat-card.has-errors .stat-val { color: #ef4444; }
+
+.mensaje-final {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.msg-ok { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+.msg-error { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+
+/* Tabla de errores */
+.errores-detalle h3 { color: #f87171; margin-bottom: 1rem; font-size: 1.1rem; }
+
+.table-wrapper {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #111827;
+  border-radius: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #374151;
+}
+
+th { background: #374151; position: sticky; top: 0; }
+td { font-family: monospace; font-size: 0.9rem; }

@@ -1,0 +1,65 @@
+<div class="carga-container">
+  <div class="card-header">
+    <h2><i class="icon"></i> Carga Masiva de Datos</h2>
+    <p>Seleccione el archivo .txt con las instrucciones para actualizar el sistema.</p>
+  </div>
+
+  <div class="upload-zone" [class.active]="selectedFile">
+    <input type="file" id="fileInput" (change)="onFileSelected($event)" accept=".txt" hidden #fileInput>
+
+    <div class="drop-area" (click)="fileInput.click()">
+      <span class="upload-icon"></span>
+      <p *ngIf="!selectedFile">Haga clic para buscar el archivo .txt</p>
+      <p *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</p>
+    </div>
+
+    <button class="btn-upload" [disabled]="!selectedFile || uploading" (click)="upload()">
+      {{ uploading ? 'Procesando...' : 'Iniciar Carga' }}
+    </button>
+  </div>
+
+  <div class="progress-container" *ngIf="uploading">
+    <div class="progress-bar" [style.width.%]="progress"></div>
+    <span>{{ progress }}%</span>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="errorMsg">
+    <strong>Error:</strong> {{ errorMsg }}
+  </div>
+
+<div class="resultados-panel" *ngIf="resultado">
+  <div class="resumen-cards">
+    <div class="stat-card success">
+      <span class="stat-val">{{ resultado.procesadas }}</span>
+      <span class="stat-label">Líneas Procesadas</span>
+    </div>
+    <div class="stat-card danger" [class.has-errors]="resultado.errores > 0">
+      <span class="stat-val">{{ resultado.errores }}</span>
+      <span class="stat-label">Errores Encontrados</span>
+    </div>
+  </div>
+
+  <div class="mensaje-final" [ngClass]="resultado.errores === 0 ? 'msg-ok' : 'msg-error'">
+    {{ resultado.mensaje }}
+  </div>
+
+  <div class="errores-detalle" *ngIf="resultado.detalles && resultado.detalles.length > 0">
+    <h3>Detalle de Errores (Transacción Revertida)</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Descripción del Error</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let det of resultado.detalles; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ det }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

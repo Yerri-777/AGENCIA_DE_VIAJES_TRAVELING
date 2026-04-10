@@ -8,32 +8,35 @@ public class Destino {
     private String descripcion;
     private String clima;
     private String imagenUrl;
-    private int PrecioBase; 
-
+    private Double precioBase;
 
     public Destino() {
     }
 
-   
-    public Destino(int idDestino, String nombre, String pais, String descripcion, String clima, int precioBase, String imagenUrl) {
+    public Destino(int idDestino) {
+        this.idDestino = idDestino;
+    }
+
+    public Destino(int idDestino, String nombre, String pais, String descripcion, String clima, Double precioBase, String imagenUrl) {
         this.idDestino = idDestino;
         this.nombre = nombre;
         this.pais = pais;
         this.descripcion = descripcion;
         this.clima = clima;
-        this.PrecioBase = precioBase;
+        this.precioBase = precioBase;
         this.imagenUrl = imagenUrl;
     }
 
-  
-    public int getPrecioBase() {
-        return PrecioBase;
+    public Destino(String nombre, String pais, String descripcion, String clima, Double precioBase, String imagenUrl) {
+        this.nombre = nombre;
+        this.pais = pais;
+        this.descripcion = descripcion;
+        this.clima = clima;
+        this.precioBase = precioBase;
+        this.imagenUrl = imagenUrl;
     }
 
-    public void setPrecioBase(int PrecioBase) {
-        this.PrecioBase = PrecioBase;
-    }
-
+    // Getters y Setters
     public int getIdDestino() {
         return idDestino;
     }
@@ -80,5 +83,13 @@ public class Destino {
 
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
+    }
+
+    public Double getPrecioBase() {
+        return precioBase;
+    }
+
+    public void setPrecioBase(Double precioBase) {
+        this.precioBase = precioBase;
     }
 }

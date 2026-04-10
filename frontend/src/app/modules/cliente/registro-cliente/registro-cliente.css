@@ -1,0 +1,196 @@
+/* 1. CONFIGURACIÓN DEL HOST (SCROLL FLUIDO) */
+:host {
+  display: block;
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  background-color: #0a0f14;
+}
+
+.cliente-root {
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #f0f0f0;
+  min-height: 100%;
+}
+
+/* 2. NAVEGACIÓN STICKY */
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  position: sticky;
+  top: -20px;
+  z-index: 1000;
+  background: #0a0f14;
+  padding: 15px 0;
+}
+
+.nav-tabs button {
+  padding: 10px 18px;
+  background: #1a252f;
+  color: white;
+  border: 1px solid #34495e;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.nav-tabs button.active {
+  background: #007bff;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+/* 3. TARJETAS */
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  margin-bottom: 25px;
+  overflow: hidden;
+  color: #333333;
+}
+
+.card-header {
+  background: #0056b3;
+  color: #ffffff;
+  padding: 15px 20px;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+/* 4. FORMULARIOS */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+.full-width {
+  grid-column: span 2;
+}
+.field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* 5. TABLAS CON SCROLL INTERNO (NUEVO) */
+.table-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 350px; /* Altura máxima de la lista */
+  background: #fff;
+}
+
+.cliente-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cliente-table thead th {
+  position: sticky;
+  top: 0;
+  background: #e9ecef;
+  color: #003366;
+  padding: 12px;
+  z-index: 5;
+}
+
+.cliente-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* 6. BOTONES */
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-success {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 7. SCROLLBARS PERSONALIZADOS */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #1a252f;
+}
+::-webkit-scrollbar-thumb {
+  background: #0056b3;
+  border-radius: 5px;
+  border: 2px solid #1a252f;
+}
+
+/* Scrollbar específico para la tabla blanca */
+.table-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border: 2px solid #f1f1f1;
+}
+
+/* 8. OTROS */
+.price-badge {
+  background: #f8f9fa;
+  border: 2px solid #28a745;
+  padding: 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: #28a745;
+  text-align: center;
+}
+.resumen-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.resumen-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+.profit strong {
+  color: #28a745;
+}
+.resultado-box {
+  background: #d4edda;
+  color: #155724;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}

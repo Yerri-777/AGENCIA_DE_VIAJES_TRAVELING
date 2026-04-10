@@ -4,7 +4,7 @@ public class Cliente {
 
     private String dpi;
     private String nombreCompleto;
-    private String fechaNacimiento;
+    private String fechaNacimiento; 
     private String telefono;
     private String email;
     private String nacionalidad;
@@ -13,7 +13,7 @@ public class Cliente {
     }
 
     public Cliente(String dpi, String nombreCompleto, String fechaNacimiento,
-            String telefono, String email, String nacionalidad) {
+                   String telefono, String email, String nacionalidad) {
         this.dpi = dpi;
         this.nombreCompleto = nombreCompleto;
         this.fechaNacimiento = fechaNacimiento;
@@ -22,6 +22,7 @@ public class Cliente {
         this.nacionalidad = nacionalidad;
     }
 
+    // Getters y Setters
     public String getDpi() {
         return dpi;
     }

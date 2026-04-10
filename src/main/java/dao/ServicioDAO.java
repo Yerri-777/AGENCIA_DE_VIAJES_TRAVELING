@@ -8,21 +8,33 @@ import java.sql.*;
 public class ServicioDAO {
 
     public void agregarAServicio(Servicio s, int idPaquete) throws Exception {
-        
         String sql = "INSERT INTO servicio (nombre, descripcion, costo_proveedor, id_proveedor, id_paquete) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = ConexionBD.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+        try (Connection conn = ConexionBD.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, s.getNombre());
             ps.setString(2, s.getDescripcion());
             ps.setDouble(3, s.getCostoProveedor());
             ps.setInt(4, s.getProveedor().getIdProveedor());
             ps.setInt(5, idPaquete);
-            
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new Exception("Error al insertar servicio: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Versión que usa la conexión externa para integrarse en la transacción de carga masiva
+     */
+    public void agregarAServicio(Connection conn, Servicio s, int idPaquete) throws Exception {
+        String sql = "INSERT INTO servicio (nombre, descripcion, costo_proveedor, id_proveedor, id_paquete) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, s.getNombre());
+            ps.setString(2, s.getDescripcion());
+            ps.setDouble(3, s.getCostoProveedor());
+            ps.setInt(4, s.getProveedor().getIdProveedor());
+            ps.setInt(5, idPaquete);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new Exception("Error al insertar servicio (carga masiva): " + e.getMessage());
         }
     }
 

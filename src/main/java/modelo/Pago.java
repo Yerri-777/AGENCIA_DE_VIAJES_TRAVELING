@@ -6,12 +6,12 @@ public class Pago {
     private double monto;
     private int metodoPago;
     private String fechaPago;
-
     private String numeroReservacion;
 
-    public Pago() {}
+    public Pago() {
+    }
 
- 
+    // Getters y Setters
     public int getIdPago() {
         return idPago;
     }
@@ -51,5 +51,4 @@ public class Pago {
     public void setNumeroReservacion(String numeroReservacion) {
         this.numeroReservacion = numeroReservacion;
     }
-
 }

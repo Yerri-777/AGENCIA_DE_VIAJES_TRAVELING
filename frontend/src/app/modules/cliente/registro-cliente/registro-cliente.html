@@ -1,0 +1,203 @@
+<<div class="cliente-root">
+  <div *ngIf="mensaje" [class]="esError ? 'notification error' : 'notification success'">
+    {{ mensaje }}
+  </div>
+
+  <div class="header-section" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h1>Horizontes Sin Límites</h1>
+      <div class="user-badge">Módulo: {{ vistaActual }} | ROL: VENDEDOR</div>
+    </div>
+    <button (click)="salir()" class="btn-danger" style="padding: 10px 20px; font-weight: bold;">
+      Cerrar Sesión
+    </button>
+  </div>
+
+  <div class="nav-tabs">
+    <button (click)="vistaActual = 'Clientes'" [class.active]="vistaActual === 'Clientes'">1. Gestión Clientes</button>
+    <button (click)="vistaActual = 'Reservaciones'" [class.active]="vistaActual === 'Reservaciones'">2. Reservaciones</button>
+    <button (click)="vistaActual = 'Pagos'" [class.active]="vistaActual === 'Pagos'">3. Caja y Pagos</button>
+    <button (click)="vistaActual = 'Reportes'" [class.active]="vistaActual === 'Reportes'">4. Reportes</button>
+  </div>
+
+  <div *ngIf="vistaActual === 'Clientes'" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <span class="step-badge">ID: {{ modelo.dpi || 'Nuevo' }}</span>
+        <h3>{{ editando ? 'Editar Cliente' : 'Registro de Cliente' }}</h3>
+      </div>
+      <div class="card-body">
+        <div class="search-section">
+          <label>Validación de Identidad (DPI/Pasaporte)</label>
+          <div class="input-group">
+            <input type="text" [(ngModel)]="modelo.dpi" placeholder="Ingrese número" />
+            <button (click)="buscar()" class="btn-primary">Validar</button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Nombre Completo</label><input type="text" [(ngModel)]="modelo.nombreCompleto" /></div>
+          <div class="field"><label>Fecha Nacimiento</label><input type="date" [(ngModel)]="modelo.fechaNacimiento" /></div>
+          <div class="field"><label>Nacionalidad</label><input type="text" [(ngModel)]="modelo.nacionalidad" /></div>
+          <div class="field"><label>Teléfono</label><input type="text" [(ngModel)]="modelo.telefono" /></div>
+          <div class="field full-width"><label>Email</label><input type="email" [(ngModel)]="modelo.email" /></div>
+        </div>
+        <div class="form-actions">
+          <button (click)="guardar()" class="btn-success">{{ editando ? ' Actualizar' : ' Guardar Cliente' }}</button>
+          <button (click)="limpiar()" class="btn-secondary">Limpiar</button>
+          <button *ngIf="modelo.dpi && modelo.dpi.length > 5" (click)="irAReservacion(modelo)" class="btn-next">
+            Reservar para: {{ modelo.nombreCompleto || 'Cliente' }} ➔
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card list-card" style="margin-top: 20px">
+      <div class="card-header"><h3>Clientes Registrados</h3></div>
+      <div class="table-scroll">
+        <table class="cliente-table">
+          <thead>
+            <tr><th>DPI</th><th>Nombre</th><th>Nacionalidad</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of clientes">
+              <td><strong>{{ c.dpi }}</strong></td>
+              <td>{{ c.nombreCompleto }}</td>
+              <td>{{ c.nacionalidad }}</td>
+              <td>
+                <div class="btn-group-sm">
+                  <button (click)="seleccionarParaEditar(c)" class="btn-sm" title="Editar"></button>
+                  <button (click)="irAReservacion(c)" class="btn-sm-success" title="Reservar"></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="vistaActual === 'Reservaciones'" class="tab-content">
+    <div class="card">
+      <div class="card-header"><h3>Crear Reservación</h3></div>
+      <div class="card-body">
+        <div class="search-section">
+          <label>Vincular Cliente (DPI)</label>
+          <div class="input-group">
+            <input [(ngModel)]="dpiSearch" placeholder="Buscar..." />
+            <button (click)="buscarCliente()" class="btn-primary">Buscar</button>
+          </div>
+        </div>
+
+        <div *ngIf="showCreateCliente" class="alert-box">
+          <p>Cliente no encontrado. Registro rápido:</p>
+          <div class="form-grid mt-2">
+            <input [(ngModel)]="newClienteNombre" placeholder="Nombre completo" />
+            <button (click)="crearCliente()" class="btn-sm-success">Continuar</button>
+          </div>
+        </div>
+
+        <div *ngIf="clienteSeleccionado" class="cliente-info-mini">
+          Titular: <strong>{{ clienteSeleccionado.nombreCompleto }}</strong> ({{ clienteSeleccionado.dpi }})
+        </div>
+
+        <div class="form-grid mt-3">
+          <div class="field">
+            <label>Paquete Turístico Disponible</label>
+            <select [(ngModel)]="selectedPaqueteNombre" (change)="calcularEstimado()">
+              <option value="">-- Seleccione un paquete --</option>
+              <option *ngFor="let p of paquetes" [value]="p.nombre">
+                {{ p.nombre }} - Q{{ p.precioVenta }} (Cupos: {{ p.capacidad }})
+              </option>
+            </select>
+          </div>
+          <div class="field">
+            <label>No. Pasajeros</label>
+            <input type="number" [(ngModel)]="cantidad" readonly />
+          </div>
+          <div class="field" *ngIf="estimado">
+            <label>Monto Total</label>
+            <div class="price-badge">Q{{ estimado }}</div>
+          </div>
+        </div>
+
+        <div class="pasajeros-section mt-3" *ngIf="selectedPaqueteNombre">
+          <label>Detalle de Pasajeros</label>
+          <div *ngFor="let p of pasajeros; let i = index" class="input-group mt-2">
+            <input [(ngModel)]="p.nombre" placeholder="Nombre Pasajero" class="flex-2" />
+            <button (click)="removePassenger(i)" class="btn-danger">-</button>
+            <button (click)="addPassenger()" class="btn-primary">+</button>
+          </div>
+        </div>
+
+        <div class="form-actions mt-4" *ngIf="!resultado">
+          <button (click)="crearReservacion()" class="btn-success" [disabled]="saving || !clienteSeleccionado || !selectedPaqueteNombre">
+            {{ saving ? 'Generando Reserva...' : 'Confirmar Reservación' }}
+          </button>
+        </div>
+
+        <div *ngIf="resultado" class="resultado-box">
+          <h4>¡Reserva Generada! Código: <strong>{{ resultado.numero }}</strong></h4>
+          <div class="form-actions mt-3">
+            <button (click)="descargarComprobante()" class="btn-primary">Ver Comprobante</button>
+            <button (click)="irAPagos(resultado)" class="btn-next">Ir a Caja </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="vistaActual === 'Pagos'" class="tab-content">
+    <div class="card">
+      <div class="card-header"><h3>Caja y Cobros</h3></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="field"><label>No. Reserva</label><input [(ngModel)]="numero" placeholder="RES-XXX" /></div>
+          <div class="field"><label>Monto a Pagar (Q)</label><input type="number" [(ngModel)]="monto" /></div>
+        </div>
+        <button (click)="registrar()" class="btn-success mt-3">Registrar Pago</button>
+      </div>
+    </div>
+
+    <div class="card list-card mt-3">
+      <div class="table-scroll">
+        <table class="cliente-table">
+          <thead><tr><th>Reserva</th><th>Monto</th><th>Fecha</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let p of pagos">
+              <td>{{ p.numero_reservacion }}</td>
+              <td>Q{{ p.monto }}</td>
+              <td>{{ p.fecha }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="vistaActual === 'Reportes'" class="tab-content">
+    <div class="card">
+      <div class="card-header"><h3>Reporte de Ventas Real</h3></div>
+      <div class="card-body">
+        <div class="form-actions" style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <button (click)="generar()" class="btn-primary">Consultar Datos de BD</button>
+          <button *ngIf="resumen" (click)="exportarPDF()" class="btn-success"> Exportar a PDF</button>
+        </div>
+
+        <div *ngIf="resumen" class="resumen-grid">
+          <div class="resumen-card">
+            <span>Ingresos Totales (BD)</span>
+            <strong>Q{{ resumen.totalVentas }}</strong>
+          </div>
+          <div class="resumen-card profit">
+            <span>Ganancia Neta</span>
+            <strong>Q{{ resumen.gananciaNeta }}</strong>
+          </div>
+        </div>
+
+        <div *ngIf="!resumen" class="alert-box" style="text-align: center;">
+          Presione "Consultar Datos" para ver las estadísticas reales de la base de datos.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

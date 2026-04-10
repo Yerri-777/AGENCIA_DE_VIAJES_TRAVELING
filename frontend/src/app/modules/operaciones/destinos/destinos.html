@@ -1,0 +1,156 @@
+<div class="operaciones-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Módulo Operaciones</h2>
+      <div class="role-badge">ROL: ENCARGADO DE OPERACIONES</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button (click)="cambiarVista('Destinos')" [class.active]="vistaActual === 'Destinos'">Gestionar Destinos</button>
+      <button (click)="cambiarVista('Paquetes')" [class.active]="vistaActual === 'Paquetes'"> Paquetes Turísticos</button>
+      <button (click)="cambiarVista('Proveedores')" [class.active]="vistaActual === 'Proveedores'"> Proveedores</button>
+
+      <button (click)="salirAlMenu()" class="btn-logout-sidebar" style="margin-top: 30px; background-color: #c0392b; color: white;">
+         Cerrar Sesión
+      </button>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="dashboard-resumen">
+      <div class="stat-card">
+        <span class="stat-value">{{ getResumen().activos }}</span>
+        <span class="stat-label">Paquetes Activos</span>
+      </div>
+      <div class="stat-card warning">
+        <span class="stat-value">{{ getResumen().bajaDisponibilidad }}</span>
+        <span class="stat-label">Baja Disponibilidad</span>
+      </div>
+      <div class="stat-card info">
+        <span class="stat-value">{{ getResumen().totalDestinos }}</span>
+        <span class="stat-label">Destinos Totales</span>
+      </div>
+    </div>
+
+    <div class="search-bar" *ngIf="vistaActual === 'Paquetes'">
+      <input type="text" [(ngModel)]="filtroTexto" placeholder=" Buscar paquete por nombre o destino...">
+    </div>
+
+    <section [hidden]="vistaActual !== 'Destinos'">
+      <h1> Gestión de Destinos</h1>
+      <div class="card-form">
+        <h3>Registrar Nuevo Destino</h3>
+        <div class="grid-inputs">
+          <input type="text" [(ngModel)]="nuevoDestino.nombre" placeholder="Nombre (Ej: Tikal)">
+          <input type="text" [(ngModel)]="nuevoDestino.pais" placeholder="País">
+          <textarea [(ngModel)]="nuevoDestino.descripcion" placeholder="Descripción breve..."></textarea>
+        </div>
+        <button class="btn-save" (click)="guardarDestino()"> Guardar Destino</button>
+      </div>
+      <div class="list-container scrollable-table">
+        <table>
+          <thead><tr><th>Nombre</th><th>País</th><th>Acciones</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let d of destinos; trackBy: trackByNombre">
+              <td><strong>{{ d.nombre }}</strong></td>
+              <td>{{ d.pais }}</td>
+              <td><button class="btn-edit">✏️</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section [hidden]="vistaActual !== 'Proveedores'">
+      <h1> Catálogo de Proveedores</h1>
+      <div class="card-form">
+        <h3>Nuevo Proveedor</h3>
+        <div class="grid-inputs inline-form">
+          <input type="text" [(ngModel)]="nuevoProveedor.nombre" placeholder="Nombre del Proveedor">
+          <select [(ngModel)]="nuevoProveedor.tipo">
+            <option [value]="1">Aerolínea</option>
+            <option [value]="2">Hotel</option>
+            <option [value]="3">Tour Operador</option>
+            <option [value]="4">Traslado</option>
+            <option [value]="5">Otro</option>
+          </select>
+          <input type="text" [(ngModel)]="nuevoProveedor.pais" placeholder="País de Operación">
+        </div>
+        <button class="btn-save mt-2" (click)="guardarProveedor()">Registrar Proveedor</button>
+      </div>
+      <div class="list-container scrollable-table">
+        <table>
+          <thead><tr><th>Nombre</th><th>Servicio</th><th>Ubicación</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let p of proveedores">
+              <td><strong>{{ p.nombre }}</strong></td>
+              <td>{{ getTipoProveedor(p.tipo) }}</td>
+              <td>{{ p.pais }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section [hidden]="vistaActual !== 'Paquetes'">
+      <h1> Configuración de Paquetes</h1>
+      <div class="card-form">
+        <h3>1. Datos Generales</h3>
+        <div class="grid-inputs">
+          <input [(ngModel)]="nuevoPaquete.nombre" placeholder="Nombre del Paquete">
+          <select [(ngModel)]="nuevoPaquete.destino">
+            <option value="">Seleccione Destino</option>
+            <option *ngFor="let d of destinos" [value]="d.nombre">{{d.nombre}}</option>
+          </select>
+          <input type="number" [(ngModel)]="nuevoPaquete.precioVenta" placeholder="Precio Venta (Q)">
+          <input type="number" [(ngModel)]="nuevoPaquete.capacidad" placeholder="Capacidad">
+        </div>
+
+        <h3 class="mt-3">2. Servicios Incluidos (Costos de Proveedor)</h3>
+        <div class="input-group-servicios">
+          <select [(ngModel)]="tempServicio.proveedor">
+            <option value="">Seleccionar Proveedor</option>
+            <option *ngFor="let p of proveedores" [value]="p.nombre">{{p.nombre}}</option>
+          </select>
+          <input [(ngModel)]="tempServicio.descripcion" placeholder="¿Qué incluye?">
+          <input type="number" [(ngModel)]="tempServicio.costo" placeholder="Costo (Q)">
+          <button type="button" (click)="agregarServicio()" class="btn-add">+ Añadir</button>
+        </div>
+
+        <div class="temp-list-wrapper">
+          <p *ngIf="nuevoPaquete.servicios.length === 0" style="text-align: center; color: #888; padding: 10px;">
+            Aún no has añadido servicios al paquete.
+          </p>
+          <ul class="lista-temp" *ngIf="nuevoPaquete.servicios.length > 0">
+            <li *ngFor="let s of nuevoPaquete.servicios; let i = index">
+              <strong>{{s.proveedor}}</strong>: {{s.descripcion}} (Q{{s.costo}})
+            </li>
+          </ul>
+        </div>
+
+        <button class="btn-main mt-3" (click)="guardarPaquete()"> Crear Paquete Completo</button>
+      </div>
+
+      <div class="list-container mt-4 scrollable-table">
+        <h3>Dashboard de Ganancias</h3>
+        <table>
+          <thead>
+            <tr><th>Paquete</th><th>Venta</th><th>Costo</th><th>Ganancia</th><th>Estado</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of paquetesFiltrados; trackBy: trackByNombre">
+              <td>{{p.nombre}} <span *ngIf="p.capacidad < 5" class="badge-alerta"></span></td>
+              <td>Q{{p.precioVenta}}</td>
+              <td>Q{{p.costoTotalAgencia}}</td>
+              <td class="text-success"><strong>Q{{p.gananciaBruta}}</strong></td>
+              <td>
+                <button [class]="p.estado ? 'btn-active' : 'btn-inactive'" (click)="toggleEstadoPaquete(p)">
+                  {{ p.estado ? 'Activo' : 'Inactivo' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

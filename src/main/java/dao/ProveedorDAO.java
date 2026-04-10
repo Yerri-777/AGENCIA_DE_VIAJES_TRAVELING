@@ -33,6 +33,43 @@ public class ProveedorDAO {
         }
     }
 
+    /**
+     * Versión que usa la conexión proporcionada (para integrarse en transacciones de carga masiva)
+     */
+    public void crear(Connection conn, Proveedor p) throws Exception {
+        if (conn == null) throw new Exception("Conexión nula");
+        if (p.getNombre() == null || p.getNombre().trim().isEmpty()) {
+            throw new Exception("El nombre del proveedor es obligatorio.");
+        }
+
+        if (existeProveedor(p.getNombre(), p.getPais())) {
+            throw new Exception("El proveedor '" + p.getNombre() + "' ya está registrado en " + p.getPais() + ".");
+        }
+
+        String sql = "INSERT INTO proveedor (nombre, tipo_servicio, pais, contacto) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, p.getNombre());
+            ps.setInt(2, p.getTipoServicio());
+            ps.setString(3, p.getPais());
+            ps.setString(4, p.getContacto());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new Exception("Error al registrar el proveedor: " + e.getMessage());
+        }
+    }
+
+    public int obtenerIdPorNombre(Connection conn, String nombre) throws SQLException {
+        String sql = "SELECT id_proveedor FROM proveedor WHERE nombre = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nombre);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt("id_proveedor");
+            }
+        }
+        return -1;
+    }
+
   
     public Proveedor[] listar() throws Exception {
         String sqlContar = "SELECT COUNT(*) FROM proveedor";

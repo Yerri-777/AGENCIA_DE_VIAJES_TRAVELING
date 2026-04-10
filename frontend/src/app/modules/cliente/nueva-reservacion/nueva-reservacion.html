@@ -1,0 +1,86 @@
+<div class="reservacion-container">
+	<h2>Nueva Reservación</h2>
+
+	<div class="form-row">
+		<label>Buscar Cliente por DPI</label>
+		<input [(ngModel)]="dpiSearch" placeholder="Ingrese DPI" />
+		<button (click)="buscarCliente()">Buscar</button>
+	</div>
+
+	<div *ngIf="cliente" class="cliente-card">
+		<h3>Cliente encontrado</h3>
+		<p><strong>Nombre:</strong> {{cliente.nombre || cliente.nombre_completo || cliente.nombreCompleto}}</p>
+		<p><strong>DPI:</strong> {{cliente.dpi}}</p>
+		<p><strong>Teléfono:</strong> {{cliente.telefono}}</p>
+	</div>
+
+	<div *ngIf="errorMessage" class="error">{{errorMessage}}</div>
+
+	<div *ngIf="showCreateCliente" class="create-cliente">
+		<h3>Crear nuevo cliente</h3>
+		<div class="form-row">
+			<label>Nombre</label>
+			<input [(ngModel)]="newClienteNombre" placeholder="Nombre completo" />
+		</div>
+		<div class="form-row">
+			<label>Teléfono</label>
+			<input [(ngModel)]="newClienteTelefono" placeholder="Teléfono" />
+		</div>
+		<div class="form-row">
+			<label>DPI</label>
+			<input [value]="dpiSearch" disabled />
+		</div>
+		<div class="actions">
+			<button (click)="crearCliente()">Crear cliente</button>
+		</div>
+	</div>
+
+	<div class="form-row">
+		<label>Paquete</label>
+		<select [(ngModel)]="selectedPaqueteId" (change)="calcularEstimado()">
+			<option [ngValue]="null">-- Seleccione --</option>
+			<option *ngFor="let p of paquetes" [value]="p.id">{{p.nombre || p.titulo}} - {{p.precio_venta || p.precio}} USD</option>
+		</select>
+	</div>
+
+	<div class="form-row">
+		<label>Cantidad de pasajeros</label>
+		<input type="number" [(ngModel)]="cantidad" (input)="calcularEstimado()" min="1" />
+	</div>
+
+	<div class="pasajeros">
+		<h4>Pasajeros</h4>
+		<div *ngFor="let p of pasajeros; let i = index" class="pasajero-row">
+			<input [(ngModel)]="p.nombre" placeholder="Nombre pasajero" />
+			<input [(ngModel)]="p.dpi" placeholder="DPI pasajero" />
+			<button (click)="removePassenger(i)" type="button">-</button>
+			<button (click)="addPassenger()" type="button">+</button>
+		</div>
+	</div>
+
+	<div class="form-row">
+		<label>Fecha de viaje</label>
+		<input type="date" [(ngModel)]="fechaViaje" />
+	</div>
+
+	<div class="estimado" *ngIf="estimado !== null">
+		<strong>Estimado (frontend):</strong> {{estimado}} USD
+		<p class="small">El costo final lo calcula el servidor al guardar la reservación.</p>
+	</div>
+
+	<div class="actions">
+		<button (click)="crearReservacion()" [disabled]="saving">Crear Reservación</button>
+	</div>
+
+	<div *ngIf="saving" class="info">Guardando reservación...</div>
+
+	<div *ngIf="resultado" class="resultado">
+		<h3>Reservación creada</h3>
+		<p><strong>Número:</strong> {{resultado.numero_reservacion || resultado.numero}}</p>
+		<p><strong>Costo total (servidor):</strong> {{resultado.costo_total || resultado.costo}} USD</p>
+		<div class="actions">
+			<button (click)="descargarComprobante()">Descargar Comprobante (PDF)</button>
+			<button (click)="cancelarReservacion()">Cancelar Reservación</button>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,8 @@
+.pagos-wrap{max-width:720px;margin:12px auto;padding:12px;border:1px solid #eee;border-radius:6px}
+.pagos-wrap .row{display:flex;gap:8px;align-items:center;margin:8px 0}
+.pagos-wrap label{width:160px;font-weight:600}
+.pagos-wrap input, .pagos-wrap select{flex:1;padding:6px;border:1px solid #ccc;border-radius:4px}
+.pagos-wrap .actions{justify-content:flex-end}
+.pagos-wrap .mensaje{margin-top:8px;color:#b00}
+.lista{width:100%;border-collapse:collapse;margin-top:12px}
+.lista th,.lista td{padding:6px;border:1px solid #ddd;text-align:left}

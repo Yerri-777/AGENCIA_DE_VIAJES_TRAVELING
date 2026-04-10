@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Start Page</title>
+        <title>Redirecting to Frontend Login</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="refresh" content="0;url=http://localhost:4200/login" />
+        <script>
+            // Fallback JS redirect
+            (function(){
+                try {
+                    window.location.replace('http://localhost:4200/login');
+                } catch(e) {}
+            })();
+        </script>
     </head>
     <body>
-        <h1>Hello World!</h1>
-    <h1>Yerri Bamaca</h1>
-    <h1>Mel osesnor</h1>
+        <p>Redirigiendo al login de la aplicación frontend...</p>
+        <p>Si no redirige automáticamente, visita <a href="http://localhost:4200/login">http://localhost:4200/login</a></p>
     </body>
 </html>

@@ -1,0 +1,23 @@
+.res-root { padding: 12px; max-width: 800px }
+.form-row { margin-bottom: 8px }
+.pasajero-row { display:flex; gap:8px; margin-bottom:6px }
+.actions { margin-top:12px }
+.msg { color: #080 }
+.error { color: #b00 }
+.resultado { margin-top:12px; padding:8px; border:1px solid #ddd }
+/* Styles for nueva-reservacion component */
+.reservacion-container { max-width: 720px; margin: 16px auto; padding: 12px; border: 1px solid #ddd; border-radius: 6px; }
+.form-row { display:flex; gap:8px; align-items:center; margin:8px 0; }
+.form-row label { width:160px; font-weight:600; }
+.form-row input[type="text"], .form-row input[type="date"], .form-row input[type="number"], .form-row select { flex:1; padding:6px; }
+.cliente-card { background:#f9f9f9; padding:8px; border-radius:4px; margin:8px 0; }
+.estimado { margin:8px 0; font-size:1.05em; }
+.actions { margin-top:12px; }
+.resultado { margin-top:12px; background:#eef9ee; padding:8px; border-radius:4px; }
+.error { color:#a00; margin:8px 0; }
+.info { color:#06a; }
+.small { font-size:0.9em; color:#666; }
+.create-cliente { margin:8px 0; padding:8px; background:#fff8e6; border-radius:4px; }
+.pasajeros { margin-top:12px; }
+.pasajero-row { display:flex; gap:8px; margin:6px 0; }
+.pasajero-row input { flex:1; padding:6px; }

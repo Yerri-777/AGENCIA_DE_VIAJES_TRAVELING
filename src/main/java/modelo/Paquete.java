@@ -1,39 +1,36 @@
 package modelo;
 
-public class PaqueteTuristico {
+public class Paquete {
 
     private int idPaquete;
     private String nombre;
     private int duracionDias;
     private double precioVenta;
     private int capacidadMaxima;
-    private String estado;
+    private int estado;
     private Destino destino;
-private Servicio[] servicios;
+    private Servicio[] servicios;
 
-public PaqueteTuristico() {
-}
-
-public PaqueteTuristico(int idPaquete, String nombre, int duracionDias, double precioVenta, 
-                           int capacidadMaxima, String estado, Destino destino) {
-  
-    this.idPaquete = idPaquete;
-    this.nombre = nombre;
-    this.duracionDias = duracionDias;
-    this.precioVenta = precioVenta;
-    this.capacidadMaxima = capacidadMaxima;
-    this.estado = estado;
-    this.destino = destino;
-}
-
-    public Servicio[] getServicios() {
-        return servicios;
+    public Paquete() {
     }
 
-    public void setServicios(Servicio[] servicios) {
-        this.servicios = servicios;
+
+    public Paquete(int idPaquete) {
+        this.idPaquete = idPaquete;
     }
 
+    public Paquete(int idPaquete, String nombre, int duracionDias, double precioVenta,
+            int capacidadMaxima, int estado, Destino destino) {
+        this.idPaquete = idPaquete;
+        this.nombre = nombre;
+        this.duracionDias = duracionDias;
+        this.precioVenta = precioVenta;
+        this.capacidadMaxima = capacidadMaxima;
+        this.estado = estado;
+        this.destino = destino;
+    }
+
+    // Getters y Setters
     public int getIdPaquete() {
         return idPaquete;
     }
@@ -74,11 +71,11 @@ public PaqueteTuristico(int idPaquete, String nombre, int duracionDias, double p
         this.capacidadMaxima = capacidadMaxima;
     }
 
-    public String getEstado() {
+    public int getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(int estado) {
         this.estado = estado;
     }
 
@@ -88,5 +85,13 @@ public PaqueteTuristico(int idPaquete, String nombre, int duracionDias, double p
 
     public void setDestino(Destino destino) {
         this.destino = destino;
+    }
+
+    public Servicio[] getServicios() {
+        return servicios;
+    }
+
+    public void setServicios(Servicio[] servicios) {
+        this.servicios = servicios;
     }
 }

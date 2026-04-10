@@ -1,0 +1,4 @@
+.reportes { max-width:800px; margin:16px auto; padding:12px; }
+.filtros { display:flex; gap:8px; align-items:center; }
+.resumen { margin-top:12px; background:#f3f7ff; padding:8px; border-radius:6px; }
+.error { color:#a00; }

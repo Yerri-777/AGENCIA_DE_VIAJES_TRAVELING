@@ -5,13 +5,18 @@ public class Usuario {
     private int idUsuario;
     private String nombreUsuario;
     private String password;
-    private boolean estado;
+    private int estado;
     private Rol rol;
 
     public Usuario() {
     }
 
-    public Usuario(int idUsuario, String nombreUsuario, String password, boolean estado, Rol rol) {
+    // Constructor para asociaciones rápidas (Carga de Datos)
+    public Usuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public Usuario(int idUsuario, String nombreUsuario, String password, int estado, Rol rol) {
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
         this.password = password;
@@ -19,6 +24,20 @@ public class Usuario {
         this.rol = rol;
     }
 
+    // Métodos de utilidad para permisos en el Front/Servlets
+    public boolean esAtencion() {
+        return rol != null && rol.getIdRol() == 1;
+    }
+
+    public boolean esOperaciones() {
+        return rol != null && rol.getIdRol() == 2;
+    }
+
+    public boolean esAdmin() {
+        return rol != null && rol.getIdRol() == 3;
+    }
+
+    // Getters y Setters
     public int getIdUsuario() {
         return idUsuario;
     }
@@ -43,11 +62,11 @@ public class Usuario {
         this.password = password;
     }
 
-    public boolean isEstado() {
+    public int getEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(int estado) {
         this.estado = estado;
     }
 
