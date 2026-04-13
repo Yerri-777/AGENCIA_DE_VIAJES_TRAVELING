@@ -56,7 +56,7 @@ public class CargaDatosServlet extends HttpServlet {
                     numeroLinea++;
                     linea = linea.trim();
 
-                    // 1. Ignorar líneas vacías, comentarios o basura
+                    // Ignorar líneas vacías, comentarios 
                     if (linea.isEmpty() || linea.startsWith("//") || !linea.contains("("))
                         continue;
 
@@ -93,7 +93,7 @@ public class CargaDatosServlet extends HttpServlet {
         String comando = linea.substring(0, indexOpen).trim().toUpperCase();
         String contenido = linea.substring(indexOpen + 1, indexClose).trim();
 
-        // Regex para comas fuera de comillas
+     
         String[] params = contenido.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
         for (int i = 0; i < params.length; i++) {
@@ -162,7 +162,7 @@ public class CargaDatosServlet extends HttpServlet {
                 break;
 
             case "SERVICIO_PAQUETE":
-                // SERVICIO_PAQUETE("Caribe Magico 7 noches", "TACA Airlines", "Vuelo...", 5200.00)
+              
                 if (params.length < 4) throw new Exception("Faltan datos para servicio_paquete (Paquete, Proveedor, Descripción, Costo)");
                 String paqueteName = params[0];
                 String proveedorName = params[1];
@@ -208,7 +208,7 @@ public class CargaDatosServlet extends HttpServlet {
                 reservacionDao.crearDesdeCarga(conn, idPaq, usuarioAgente, fechaViaje, dpis);
                 break;
 
-            case "PAGO": // PAGO("RES-00001", 18500.00, 1, "05/06/2025")
+            case "PAGO": 
                 if (params.length < 4) throw new Exception("Faltan datos para pago (Reservacion, Monto, Metodo, Fecha)");
                 String numRes = params[0];
                 double monto = Double.parseDouble(params[1]);
@@ -222,7 +222,7 @@ public class CargaDatosServlet extends HttpServlet {
         }
     }
 
-    // --- MÉTODOS DE APOYO (Sin cambios pero integrados) ---
+    
 
     private void configurarHeaders(HttpServletResponse resp) {
         resp.setContentType("application/json");

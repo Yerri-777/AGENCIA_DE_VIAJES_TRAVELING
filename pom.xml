@@ -42,7 +42,7 @@
             <version>2.10.1</version>
         </dependency>
         
-        <!-- PDF generation (Apache PDFBox) -->
+        <!-- PDF   -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>

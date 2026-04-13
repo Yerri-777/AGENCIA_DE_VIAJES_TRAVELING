@@ -18,17 +18,17 @@ public class CancelacionDAO {
             conn.setAutoCommit(false);
 
             try {
-                // 1. Validar existencia
+              
                 if (!existeRegistro(conn, sqlExiste, reservacion)) {
                     throw new Exception("La reservación '" + reservacion + "' no existe.");
                 }
 
-                // 2. Validar si ya está cancelada (viendo el estado actual)
+              
                 if (estaCancelada(conn, sqlYaCancelada, reservacion)) {
                     throw new Exception("La reservación '" + reservacion + "' ya se encuentra CANCELADA.");
                 }
 
-                // 3. Insertar registro de cancelación
+            
                 try (PreparedStatement ps = conn.prepareStatement(sqlInsertar)) {
                     ps.setDouble(1, reembolso);
                     ps.setDouble(2, perdida);
@@ -36,7 +36,6 @@ public class CancelacionDAO {
                     ps.executeUpdate();
                 }
 
-                // 4. Actualizar el estado de la reservación a 'CANCELADA'
                 try (PreparedStatement ps = conn.prepareStatement(sqlActualizarEstado)) {
                     ps.setString(1, reservacion);
                     ps.executeUpdate();
@@ -63,13 +62,13 @@ public class CancelacionDAO {
         String sqlDatos = "SELECT * FROM cancelacion";
 
         try (Connection conn = ConexionBD.getConnection()) {
-            // 1. Contar para dimensionar el arreglo
+    
             int total = 0;
             try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sqlContar)) {
                 if (rs.next()) total = rs.getInt(1);
             }
 
-            // 2. Crear el arreglo (puedes usar el modelo Cancelacion si lo tienes)
+            
             Object[] lista = new Object[total];
 
             // 3. Llenar el arreglo

@@ -1,0 +1,49 @@
+<div class="usuarios-container">
+  <header class="section-header">
+    <h2>Gestión de Personal</h2>
+    <p>Listado de Agentes y Operadores del Sistema</p>
+  </header>
+
+  <div class="tabla-wrapper">
+    <table class="tabla-usuarios">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre Real</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="usuarios.length === 0 && !cargando">
+          <td colspan="5" class="empty-msg">
+            No hay personal registrado (Cargue un archivo .txt o verifique la DB)
+          </td>
+        </tr>
+
+        <tr *ngFor="let user of usuarios">
+          <td><strong>{{ user.username }}</strong></td>
+          <td>{{ user.nombre }}</td>
+          <td><span class="badge-rol">{{ user.rol }}</span></td>
+          <td>
+            <span [class]="user.estado === 'ACTIVO' ? 'txt-verde' : 'txt-rojo'">
+              EN: {{ user.estado }}
+            </span>
+          </td>
+          <td>
+            <button
+              [class]="user.estado === 'ACTIVO' ? 'btn-desactivar' : 'btn-activar'"
+              (click)="alternarEstado(user)">
+              {{ user.estado === 'ACTIVO' ? 'Dar de Baja' : 'Reactivar' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn-regresar" routerLink="/admin/dashboard">Volver al Panel</button>
+  </div>
+</div>

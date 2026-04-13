@@ -15,6 +15,37 @@ export interface Cliente {
 
 @Injectable({ providedIn: 'root' })
 export class ClienteService {
+  crearLocal(payload: { dpi: string; nombre: string; nacimiento: string; tel: string; email: string; nacionalidad: string; } | Cliente) {
+
+    const cliente: Cliente = {
+      dpi: (payload as any).dpi || '',
+      nombreCompleto: (payload as any).nombreCompleto || (payload as any).nombre || '',
+      fechaNacimiento: (payload as any).fechaNacimiento || (payload as any).nacimiento || '',
+      telefono: (payload as any).telefono || (payload as any).tel || '',
+      email: (payload as any).email || '',
+      nacionalidad: (payload as any).nacionalidad || ''
+    };
+
+
+    try {
+      const key = 'clientes_cache';
+      const list = JSON.parse(localStorage.getItem(key) || '[]');
+      list.push(cliente);
+      localStorage.setItem(key, JSON.stringify(list));
+    } catch (e) {
+      console.warn('No se pudo guardar cliente en localStorage', e);
+    }
+
+
+    try {
+      this.crear(cliente).subscribe({
+        next: () => console.log('Cliente creado en backend:', cliente.dpi),
+        error: () => console.warn('No se pudo crear cliente en backend, quedó en cache local')
+      });
+    } catch (e) {
+
+    }
+  }
   private readonly base = (environment.apiBaseUrl || 'http://localhost:8080/Horizontes').replace(/\/$/, '') + '/';
   private readonly URL = this.base + 'clientes';
 

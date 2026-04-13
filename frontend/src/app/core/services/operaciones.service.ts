@@ -6,6 +6,24 @@ import { Destino, Paquete, Proveedor } from '../../modules/operaciones/destinos/
   providedIn: 'root'
 })
 export class OperacionesService {
+  addDestino(arg0: { nombre: string; pais: string; descripcion: string; }) {
+    throw new Error('Method not implemented.');
+  }
+  addProveedor(arg0: { nombre: string; tipo: string; pais: string; }) {
+    throw new Error('Method not implemented.');
+  }
+  addPaquete(arg0: { nombre: string; destino: string; duracion: string; precio: string; capacidad: string; }) {
+    throw new Error('Method not implemented.');
+  }
+  asignarServicio(arg0: string, arg1: { proveedor: string; desc: string; costo: string; }) {
+    throw new Error('Method not implemented.');
+  }
+  addReservacion(arg0: { paquete: string; agente: string; fecha: string; pasajeros: string[]; }) {
+    throw new Error('Method not implemented.');
+  }
+  addPago(arg0: { reserva: string; monto: string; metodo: string; fecha: string; }) {
+    throw new Error('Method not implemented.');
+  }
 
   // Estados iniciales  BD
   private destinosSubject = new BehaviorSubject<Destino[]>([]);

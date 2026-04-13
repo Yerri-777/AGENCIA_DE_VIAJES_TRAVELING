@@ -9,7 +9,7 @@ describe('RegistroClienteComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // Si el componente es Standalone, se importa aquí
+
       imports: [
         RegistroClienteComponent,
         CommonModule,
@@ -20,7 +20,7 @@ describe('RegistroClienteComponent', () => {
     fixture = TestBed.createComponent(RegistroClienteComponent);
     component = fixture.componentInstance;
 
-    // Detectamos cambios iniciales para que Angular procese el componente
+
     fixture.detectChanges();
   });
 

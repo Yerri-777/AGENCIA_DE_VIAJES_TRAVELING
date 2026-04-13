@@ -6,7 +6,7 @@ import java.util.*;
 
 public class ReporteDAO {
 
-    // 1. Destinos más vendidos
+    //  Destinos más vendidos
     public List<Map<String, Object>> obtenerDestinosPopulares() throws Exception {
         String sql = "SELECT d.nombre, COUNT(r.numero_reservacion) as ventas "
                 + "FROM destino d JOIN paquete p ON d.id_destino = p.id_destino "
@@ -15,7 +15,7 @@ public class ReporteDAO {
         return ejecutarConsultaGrafica(sql);
     }
 
-    // 2. Ingresos mensuales
+    // Ingresos mensuales
     public List<Map<String, Object>> obtenerIngresosMensuales() throws Exception {
         String sql = "SELECT MONTHNAME(fecha_pago) as mes, SUM(monto) as total "
                 + "FROM pago GROUP BY MONTH(fecha_pago) ORDER BY MONTH(fecha_pago)";

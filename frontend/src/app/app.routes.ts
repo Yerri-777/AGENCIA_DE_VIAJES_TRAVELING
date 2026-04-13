@@ -1,33 +1,23 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './modules/auth/login/login';
+import { WelcomeComponent } from './modules/shared/welcome/welcome'; // Asegúrate de que la ruta sea correcta
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
-  // 1. RUTA INICIAL
-  {
-    path: '',
-    loadComponent: () => import('./modules/shared/welcome/welcome').then(m => m.WelcomeComponent),
-    pathMatch: 'full'
-  },
 
-  // 2. RUTA DE AUTENTICACIÓN
-  {
-    path: 'login',
-    component: LoginComponent
-  },
+  { path: '', component: WelcomeComponent },
 
-  // 3. RUTAS PROTEGIDAS: ADMINISTRADOR (Rol 3)
+
+  { path: 'login', component: LoginComponent },
+
+
   {
     path: 'admin',
     canActivate: [authGuard, roleGuard],
-    data: { roles: [3] }, // El Guard verificará que el usuario tenga rol 3
+    data: { roles: [3] },
     children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
-      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
         loadComponent: () => import('./modules/admin/dashboard/dashboard').then(m => m.DashboardComponent)
@@ -39,21 +29,21 @@ export const routes: Routes = [
       {
         path: 'carga-masiva',
         loadComponent: () => import('./modules/admin/carga-masiva/carga-masiva').then(m => m.CargaMasivaComponent)
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('./modules/Usuarios/usuario').then(m => m.UsuariosComponent)
       }
     ]
   },
 
-  // 4. RUTAS PROTEGIDAS: ATENCIÓN AL CLIENTE (Rol 1)
+
   {
-    path: 'atencion', // Cambiado a 'atencion' para coincidir con el nombre del área
+    path: 'atencion',
     canActivate: [authGuard, roleGuard],
     data: { roles: [1] },
     children: [
-      {
-        path: '',
-        redirectTo: 'registro-cliente',
-        pathMatch: 'full'
-      },
+      { path: '', redirectTo: 'registro-cliente', pathMatch: 'full' },
       {
         path: 'registro-cliente',
         loadComponent: () => import('./modules/cliente/registro-cliente/registro-cliente').then(m => m.RegistroClienteComponent)
@@ -69,17 +59,13 @@ export const routes: Routes = [
     ]
   },
 
-  // 5. RUTAS PROTEGIDAS: OPERACIONES (Rol 2)
+
   {
     path: 'operaciones',
     canActivate: [authGuard, roleGuard],
     data: { roles: [2] },
     children: [
-      {
-        path: '',
-        redirectTo: 'destinos',
-        pathMatch: 'full'
-      },
+      { path: '', redirectTo: 'destinos', pathMatch: 'full' },
       {
         path: 'destinos',
         loadComponent: () => import('./modules/operaciones/destinos/destinos').then(m => m.DestinosComponent)
@@ -91,15 +77,15 @@ export const routes: Routes = [
     ]
   },
 
-  // 6. MANEJO DE ERRORES
+
   {
     path: 'forbidden',
     loadComponent: () => import('./modules/shared/forbidden/forbidden').then(m => m.ForbiddenComponent)
   },
 
-  // COMODÍN: Redirigir cualquier otra ruta al login
+
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: ''
   }
 ];

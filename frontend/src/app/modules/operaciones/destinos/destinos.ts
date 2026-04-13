@@ -44,42 +44,70 @@ export interface Paquete {
   styleUrls: ['./destinos.css'],
 })
 export class DestinosComponent implements OnInit {
-  // --- Control de Navegacion y Filtros ---
+
   vistaActual: string = 'Destinos';
   filtroTexto: string = '';
+  editandoPaquete: boolean = false;
+  editandoDestino: boolean = false;
 
-  // --- Listados de Datos Centralizados ---
+
   destinos: Destino[] = [];
   proveedores: Proveedor[] = [];
   paquetes: Paquete[] = [];
 
-  // --- Modelos para Creacion de Objetos ---
   nuevoDestino: Destino = { nombre: '', pais: '', descripcion: '', clima: '', imagenUrl: '' };
   nuevoProveedor: Proveedor = { nombre: '', tipo: 1, pais: '' };
   nuevoPaquete: Paquete = this.limpiarPaquete();
 
-  // Objeto temporal para capturar servicios antes de agregarlos al paquete
+
   tempServicio: ServicioIncluido = { proveedor: '', descripcion: '', costo: 0 };
 
   constructor(
     private operacionesService: OperacionesService,
-    private router: Router // Inyectado para navegación
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.operacionesService.destinos$.subscribe(d => this.destinos = d);
-    this.operacionesService.paquetes$.subscribe(p => this.paquetes = p);
-    this.operacionesService.proveedores$.subscribe(pr => this.proveedores = pr);
+
+    this.operacionesService.destinos$.subscribe(d => {
+      const cache = JSON.parse(localStorage.getItem('destinos_cache') || '[]');
+      const unificados = [...d, ...cache];
+      const mapa = new Map(unificados.map(item => [item.nombre, item]));
+      this.destinos = Array.from(mapa.values());
+    });
+
+    this.operacionesService.paquetes$.subscribe(p => {
+      const cache = JSON.parse(localStorage.getItem('paquetes_cache') || '[]');
+      const unificados = [...p, ...cache];
+
+      const mapa = new Map(unificados.map(item => {
+        const pkgValido = {
+          ...item,
+          estado: true,
+          precioVenta: item.precioVenta || (item as any).precio || 0
+        };
+        return [pkgValido.nombre, pkgValido];
+      }));
+      this.paquetes = Array.from(mapa.values());
+    });
+
+    this.operacionesService.proveedores$.subscribe(pr => {
+      const cache = JSON.parse(localStorage.getItem('proveedores_cache') || '[]');
+      const unificados = [...pr, ...cache];
+      const mapa = new Map(unificados.map(item => [item.nombre, item]));
+      this.proveedores = Array.from(mapa.values());
+    });
   }
 
-  // MÉTODO PARA VOLVER AL LOGIN (Asegúrate que se llame igual en el HTML)
   salirAlMenu() {
     if (confirm('¿Cerrar sesión y volver al login?')) {
+      localStorage.removeItem('agencia_session');
+      localStorage.removeItem('user_role');
       this.router.navigate(['/login']);
     }
   }
 
-  // --- Consultas y Calculos de Interfaz ---
+
   get paquetesFiltrados() {
     const busqueda = this.filtroTexto.toLowerCase();
     return this.paquetes.filter(p =>
@@ -90,7 +118,7 @@ export class DestinosComponent implements OnInit {
 
   getResumen() {
     return {
-      activos: this.paquetes.filter(p => p.estado).length,
+      activos: this.paquetes.filter(p => p.estado !== false).length,
       bajaDisponibilidad: this.paquetes.filter(p => p.capacidad < 5).length,
       totalDestinos: this.destinos.length
     };
@@ -105,6 +133,7 @@ export class DestinosComponent implements OnInit {
   }
 
   limpiarPaquete(): Paquete {
+    this.editandoPaquete = false;
     return {
       nombre: '',
       destino: '',
@@ -118,13 +147,26 @@ export class DestinosComponent implements OnInit {
 
   cambiarVista(vista: string) {
     this.vistaActual = vista;
+    if (vista !== 'Paquetes') this.cancelarEdicion();
   }
 
   trackByNombre(index: number, item: any): string {
     return item.nombre;
   }
 
-  // --- Logica de Accion: Paquetes ---
+
+
+  prepararEdicion(p: Paquete) {
+
+    this.nuevoPaquete = JSON.parse(JSON.stringify(p));
+    this.editandoPaquete = true;
+    this.vistaActual = 'Paquetes';
+  }
+
+  cancelarEdicion() {
+    this.nuevoPaquete = this.limpiarPaquete();
+    this.editandoPaquete = false;
+  }
 
   agregarServicio() {
     if (this.tempServicio.proveedor && this.tempServicio.costo > 0) {
@@ -134,11 +176,15 @@ export class DestinosComponent implements OnInit {
         costo: Number(this.tempServicio.costo)
       };
 
-      this.nuevoPaquete.servicios = [...this.nuevoPaquete.servicios, servicioAGuardar];
+      this.nuevoPaquete.servicios.push(servicioAGuardar);
       this.tempServicio = { proveedor: '', descripcion: '', costo: 0 };
     } else {
-      alert("Debe seleccionar un proveedor e indicar un costo valido para el servicio.");
+      alert("Debe seleccionar un proveedor e indicar un costo válido.");
     }
+  }
+
+  removeServicio(index: number) {
+    this.nuevoPaquete.servicios.splice(index, 1);
   }
 
   guardarPaquete() {
@@ -147,27 +193,48 @@ export class DestinosComponent implements OnInit {
       return;
     }
 
-    const costoTotal = this.nuevoPaquete.servicios.reduce((acc, s) => acc + s.costo, 0);
+    const costoTotal = this.nuevoPaquete.servicios.reduce((acc, s) => acc + Number(s.costo), 0);
     this.nuevoPaquete.costoTotalAgencia = costoTotal;
     this.nuevoPaquete.gananciaBruta = this.nuevoPaquete.precioVenta - costoTotal;
+    this.nuevoPaquete.estado = true; // Asegurar activo
 
-    this.operacionesService.setPaquetes([...this.paquetes, { ...this.nuevoPaquete }]);
+    let nuevosPaquetes = [...this.paquetes];
+    const idx = nuevosPaquetes.findIndex(x => x.nombre === this.nuevoPaquete.nombre);
 
-    alert("Paquete guardado y publicado en el sistema de ventas.");
+    if (idx !== -1) {
+      nuevosPaquetes[idx] = { ...this.nuevoPaquete };
+    } else {
+      nuevosPaquetes.push({ ...this.nuevoPaquete });
+    }
+
+    this.operacionesService.setPaquetes(nuevosPaquetes);
+    localStorage.setItem('paquetes_cache', JSON.stringify(nuevosPaquetes));
+
+    alert(this.editandoPaquete ? "Paquete actualizado correctamente." : "Paquete guardado y publicado.");
     this.nuevoPaquete = this.limpiarPaquete();
+    this.vistaActual = 'Destinos';
   }
 
   toggleEstadoPaquete(p: Paquete) {
     p.estado = !p.estado;
     this.operacionesService.setPaquetes([...this.paquetes]);
+    localStorage.setItem('paquetes_cache', JSON.stringify(this.paquetes));
   }
 
-  // --- Logica de Accion: Proveedores y Destinos ---
+
+  prepararEdicionDestino(d: Destino) {
+    this.nuevoDestino = { ...d };
+    this.editandoDestino = true;
+    this.vistaActual = 'Destinos';
+  }
 
   guardarProveedor() {
     if (this.nuevoProveedor.nombre && this.nuevoProveedor.pais) {
       const p = { ...this.nuevoProveedor, tipo: Number(this.nuevoProveedor.tipo) };
-      this.operacionesService.setProveedores([...this.proveedores, p]);
+      const listaActualizada = [...this.proveedores, p];
+      this.operacionesService.setProveedores(listaActualizada);
+      localStorage.setItem('proveedores_cache', JSON.stringify(listaActualizada));
+
       this.nuevoProveedor = { nombre: '', tipo: 1, pais: '' };
       alert("Proveedor registrado exitosamente.");
     } else {
@@ -177,9 +244,21 @@ export class DestinosComponent implements OnInit {
 
   guardarDestino() {
     if (this.nuevoDestino.nombre && this.nuevoDestino.pais) {
-      this.operacionesService.setDestinos([...this.destinos, { ...this.nuevoDestino }]);
+      let listaActualizada = [...this.destinos];
+      const idx = listaActualizada.findIndex(x => x.nombre === this.nuevoDestino.nombre);
+
+      if (idx !== -1) {
+        listaActualizada[idx] = { ...this.nuevoDestino };
+      } else {
+        listaActualizada.push({ ...this.nuevoDestino });
+      }
+
+      this.operacionesService.setDestinos(listaActualizada);
+      localStorage.setItem('destinos_cache', JSON.stringify(listaActualizada));
+
+      alert(this.editandoDestino ? "Destino actualizado." : "Nuevo destino agregado.");
       this.nuevoDestino = { nombre: '', pais: '', descripcion: '', clima: '', imagenUrl: '' };
-      alert("Nuevo destino agregado al catalogo.");
+      this.editandoDestino = false;
     } else {
       alert("El nombre y el pais del destino son campos obligatorios.");
     }

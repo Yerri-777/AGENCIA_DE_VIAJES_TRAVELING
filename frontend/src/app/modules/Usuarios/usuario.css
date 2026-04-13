@@ -1,0 +1,162 @@
+/* Contenedor principal */
+.usuarios-container {
+  padding: 30px;
+  background: #0f172a;
+  min-height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.section-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 10px;
+}
+
+.section-header h2 {
+  margin: 0;
+  color: #3b82f6;
+}
+
+
+.tabla-wrapper {
+  max-height: 60vh;
+  overflow-y: auto;
+  background: #1e293b;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+.tabla-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tabla-wrapper::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+.tabla-wrapper::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 10px;
+  border: 2px solid #1e293b;
+}
+
+.tabla-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+
+.tabla-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-usuarios th {
+  background: #334155;
+  padding: 15px;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tabla-usuarios td {
+  padding: 15px;
+  border-bottom: 1px solid #334155;
+  vertical-align: middle;
+}
+
+.tabla-usuarios tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+
+.badge-rol {
+  background: #475569;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border: 1px solid #64748b;
+}
+
+.txt-verde {
+  color: #4ade80;
+  font-weight: 500;
+}
+
+.txt-rojo {
+  color: #f87171;
+  font-weight: 500;
+}
+
+.btn-desactivar {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.btn-desactivar:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btn-activar {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.btn-activar:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+
+.footer-actions {
+  margin-top: 25px;
+}
+
+.btn-regresar {
+  background: transparent;
+  border: 1px solid #64748b;
+  color: #94a3b8;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-regresar:hover {
+  background: #334155;
+  color: white;
+  border-color: white;
+}
+
+
+.empty-msg {
+  text-align: center;
+  padding: 40px !important;
+  color: #64748b;
+  font-style: italic;
+}

@@ -10,7 +10,7 @@
       <button (click)="cambiarVista('Proveedores')" [class.active]="vistaActual === 'Proveedores'"> Proveedores</button>
 
       <button (click)="salirAlMenu()" class="btn-logout-sidebar" style="margin-top: 30px; background-color: #c0392b; color: white;">
-         Cerrar Sesión
+          Cerrar Sesión
       </button>
     </nav>
   </aside>
@@ -38,13 +38,16 @@
     <section [hidden]="vistaActual !== 'Destinos'">
       <h1> Gestión de Destinos</h1>
       <div class="card-form">
-        <h3>Registrar Nuevo Destino</h3>
+        <h3>{{ editandoDestino ? 'Editando Destino' : 'Registrar Nuevo Destino' }}</h3>
         <div class="grid-inputs">
-          <input type="text" [(ngModel)]="nuevoDestino.nombre" placeholder="Nombre (Ej: Tikal)">
+          <input type="text" [(ngModel)]="nuevoDestino.nombre" placeholder="Nombre (Ej: Tikal)" [disabled]="editandoDestino">
           <input type="text" [(ngModel)]="nuevoDestino.pais" placeholder="País">
           <textarea [(ngModel)]="nuevoDestino.descripcion" placeholder="Descripción breve..."></textarea>
         </div>
-        <button class="btn-save" (click)="guardarDestino()"> Guardar Destino</button>
+        <div class="btn-group">
+          <button class="btn-save" (click)="guardarDestino()"> {{ editandoDestino ? 'Actualizar Destino' : 'Guardar Destino' }}</button>
+          <button *ngIf="editandoDestino" class="btn-cancel" (click)="editandoDestino = false; nuevoDestino = {nombre:'', pais:'', descripcion:''}">Cancelar</button>
+        </div>
       </div>
       <div class="list-container scrollable-table">
         <table>
@@ -53,7 +56,7 @@
             <tr *ngFor="let d of destinos; trackBy: trackByNombre">
               <td><strong>{{ d.nombre }}</strong></td>
               <td>{{ d.pais }}</td>
-              <td><button class="btn-edit">✏️</button></td>
+              <td><button class="btn-edit" (click)="prepararEdicionDestino(d)">✏️ Editar</button></td>
             </tr>
           </tbody>
         </table>
@@ -94,9 +97,9 @@
     <section [hidden]="vistaActual !== 'Paquetes'">
       <h1> Configuración de Paquetes</h1>
       <div class="card-form">
-        <h3>1. Datos Generales</h3>
+        <h3>1. Datos Generales {{ editandoPaquete ? '(Modo Edición)' : '' }}</h3>
         <div class="grid-inputs">
-          <input [(ngModel)]="nuevoPaquete.nombre" placeholder="Nombre del Paquete">
+          <input [(ngModel)]="nuevoPaquete.nombre" placeholder="Nombre del Paquete" [disabled]="editandoPaquete">
           <select [(ngModel)]="nuevoPaquete.destino">
             <option value="">Seleccione Destino</option>
             <option *ngFor="let d of destinos" [value]="d.nombre">{{d.nombre}}</option>
@@ -123,22 +126,28 @@
           <ul class="lista-temp" *ngIf="nuevoPaquete.servicios.length > 0">
             <li *ngFor="let s of nuevoPaquete.servicios; let i = index">
               <strong>{{s.proveedor}}</strong>: {{s.descripcion}} (Q{{s.costo}})
+              <button (click)="removeServicio(i)" style="color: red; border: none; background: none; cursor: pointer;">[X]</button>
             </li>
           </ul>
         </div>
 
-        <button class="btn-main mt-3" (click)="guardarPaquete()"> Crear Paquete Completo</button>
+        <div class="btn-group mt-3">
+          <button class="btn-main" (click)="guardarPaquete()">
+            {{ editandoPaquete ? 'Guardar Cambios' : 'Crear Paquete Completo' }}
+          </button>
+          <button *ngIf="editandoPaquete" class="btn-cancel" (click)="cancelarEdicion()">Cancelar</button>
+        </div>
       </div>
 
       <div class="list-container mt-4 scrollable-table">
         <h3>Dashboard de Ganancias</h3>
         <table>
           <thead>
-            <tr><th>Paquete</th><th>Venta</th><th>Costo</th><th>Ganancia</th><th>Estado</th></tr>
+            <tr><th>Paquete</th><th>Venta</th><th>Costo</th><th>Ganancia</th><th>Estado</th><th>Editar</th></tr>
           </thead>
           <tbody>
             <tr *ngFor="let p of paquetesFiltrados; trackBy: trackByNombre">
-              <td>{{p.nombre}} <span *ngIf="p.capacidad < 5" class="badge-alerta"></span></td>
+              <td>{{p.nombre}} <span *ngIf="p.capacidad < 5" class="badge-alerta">⚠️</span></td>
               <td>Q{{p.precioVenta}}</td>
               <td>Q{{p.costoTotalAgencia}}</td>
               <td class="text-success"><strong>Q{{p.gananciaBruta}}</strong></td>
@@ -146,6 +155,9 @@
                 <button [class]="p.estado ? 'btn-active' : 'btn-inactive'" (click)="toggleEstadoPaquete(p)">
                   {{ p.estado ? 'Activo' : 'Inactivo' }}
                 </button>
+              </td>
+              <td>
+                <button class="btn-edit" (click)="prepararEdicion(p)">✏️</button>
               </td>
             </tr>
           </tbody>

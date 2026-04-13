@@ -16,38 +16,6 @@ import java.sql.SQLException;
 @WebServlet("/reservaciones")
 public class ReservacionServlet extends HttpServlet {
 
-        /*
-         Server-side validation notes & examples for backend team
-
-         POST /reservaciones
-         - Purpose: create a new reservation (cabecera + pasajeros)
-         - Server responsibilities:
-             * Validate session (agent must be logged in).
-             * Validate required fields: paquete.id, cantidadPasajeros > 0, fechaViaje valid date, pasajeros[] present.
-             * Recompute costoTotal on server side using paquete and servicio_paquete prices to prevent client tampering.
-             * Check capacity/overbooking and reject with 409 Conflict if capacity exceeded.
-             * Generate unique reservation number (e.g. RES-00001) and return it in response.
-             * Use DB transaction: insert header, insert pasajeros, commit or rollback on error.
-
-         Expected JSON request body (example):
-         {
-             "paquete": { "id": 12 },
-             "cantidadPasajeros": 3,
-             "fechaViaje": "2026-05-21",
-             "pasajeros": [ { "nombre":"Juan Perez", "dpi":"1234567890101" }, {"nombre":"Ana", "dpi":"1010101010101"} ]
-         }
-
-         Example responses:
-         - Success (201): { "numero":"RES-00042", "mensaje":"Reservación registrada y vinculada a pasajeros" }
-         - Client error (400): { "mensaje":"Datos del paquete o pasajeros incompletos" }
-         - Unauthorized (401): { "mensaje":"Debe iniciar sesión para crear reservaciones" }
-         - Conflict (409): { "mensaje":"Capacidad del paquete insuficiente" }
-         - Server error (500): { "mensaje":"Error en registro: detalle..." }
-
-         Notes for DAO implementers:
-             - dao.crear(conn, r) should compute and persist costo_total, return generated reservation number.
-             - Use SELECT ... FOR UPDATE where needed to enforce capacity checks atomically.
-        */
 
     private final ReservacionDAO dao = new ReservacionDAO();
     private final Gson gson = new Gson();

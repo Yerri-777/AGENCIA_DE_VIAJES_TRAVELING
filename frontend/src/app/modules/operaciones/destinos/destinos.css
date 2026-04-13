@@ -275,13 +275,13 @@ tr:hover { background-color: #ced6e0; }
 
 td strong { color: #000000; font-weight: 700; }
 
-/* --- Estado de Paquetes --- */
+
 .btn-active { background: #27ae60; color: white; padding: 6px 12px; border-radius: 5px; border: none; font-weight: 700; }
 .btn-inactive { background: #c0392b; color: white; padding: 6px 12px; border-radius: 5px; border: none; font-weight: 700; }
 .badge-alerta { color: #c0392b; font-weight: 900; margin-left: 10px; }
 .text-success { color: #27ae60; font-weight: 900; }
 
-/* --- Utilidades --- */
+
 .mt-2 { margin-top: 10px; }
 .mt-3 { margin-top: 15px; }
 .mt-4 { margin-top: 20px; }
@@ -298,7 +298,6 @@ td strong { color: #000000; font-weight: 700; }
   align-items: center;
 }
 
-/* --- PERSONALIZACIÓN DE SCROLLBARS --- */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -309,7 +308,7 @@ td strong { color: #000000; font-weight: 700; }
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2c3e50; /* Color principal oscuro */
+  background: #2c3e50;
   border-radius: 10px;
   border: 2px solid #f1f2f6;
 }
@@ -318,14 +317,14 @@ td strong { color: #000000; font-weight: 700; }
   background: #34495e;
 }
 
-/* Scrollbar específico para Sidebar */
+
 .sidebar::-webkit-scrollbar-track { background: #1a252f; }
 .sidebar::-webkit-scrollbar-thumb {
   background: #3498db;
   border: 2px solid #1a252f;
 }
 
-/* Firefox Support */
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #2c3e50 #f1f2f6;

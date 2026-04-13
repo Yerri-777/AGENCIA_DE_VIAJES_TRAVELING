@@ -28,51 +28,57 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMsg = '';
 
-    console.log('LoginComponent: Iniciando sesión para', this.nombre);
 
+    const usuariosLocales = JSON.parse(localStorage.getItem('usuarios_sistema') || '[]');
+    const usuarioEncontrado = usuariosLocales.find((u: any) =>
+      u.username === this.nombre && u.password === this.password
+    );
+
+    if (usuarioEncontrado) {
+      console.log('Login exitoso (Carga Masiva):', usuarioEncontrado.username);
+      this.ejecutarRedireccion(Number(usuarioEncontrado.rol));
+      return;
+    }
+
+
+    console.log('Buscando usuario en servidor...');
     this.authService.login(this.nombre, this.password).subscribe({
       next: (user) => {
-        // 1. Apagamos el estado de carga inmediatamente al recibir respuesta
         this.isLoading = false;
-
-        // 2. Forzamos que el rol sea un número para evitar fallos en la comparación
-        const userRol = Number(user.rol);
-        console.log('Login exitoso, procesando navegación para rol:', userRol);
-
-        let ruta = '';
-
-        // 3. Lógica de ruteo mejorada
-        if (userRol === 3) {
-          ruta = '/admin/dashboard';
-        } else if (userRol === 1) {
-          ruta = '/atencion/registro-cliente';
-        } else if (userRol === 2) {
-          ruta = '/operaciones/destinos';
-        } else {
-          // Si el rol es extraño, mandamos a una ruta segura por defecto
-          ruta = '/operaciones/destinos';
-        }
-
-        console.log('Intentando navegar a:', ruta);
-
-        // 4. Ejecución de la navegación con manejo de éxito/error
-        this.router.navigate([ruta]).then((navigated) => {
-          if (navigated) {
-            console.log('Navegación completada con éxito a:', ruta);
-          } else {
-            console.error('La navegación fue rechazada. Revisa los Guards en app.routes.ts');
-            this.errorMsg = 'No tienes permiso para acceder a esa sección.';
-          }
-        }).catch(err => {
-          console.error('Error al navegar:', err);
-          this.errorMsg = 'Error en la ruta del sistema.';
-        });
+        this.ejecutarRedireccion(Number(user.rol));
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMsg = 'Credenciales inválidas o error de conexión con el servidor.';
-        console.error('Error de login capturado:', err);
+        this.errorMsg = 'Credenciales inválidas o error de conexión.';
+        console.error('Error de login:', err);
       }
+    });
+  }
+
+  private ejecutarRedireccion(rol: number) {
+    this.isLoading = false;
+    let ruta = '';
+
+    // Lógica de ruteo por rol
+    if (rol === 3) {
+      ruta = '/admin/dashboard';
+    } else if (rol === 1) {
+      ruta = '/atencion/registro-cliente';
+    } else if (rol === 2) {
+      ruta = '/operaciones/destinos';
+    } else {
+
+      ruta = '/operaciones/destinos';
+    }
+
+    console.log(`Navegando a panel de Rol ${rol}: ${ruta}`);
+
+    this.router.navigate([ruta]).then((navigated) => {
+      if (!navigated) {
+        this.errorMsg = 'No tienes permiso para acceder a esta sección.';
+      }
+    }).catch(err => {
+      this.errorMsg = 'Error en el sistema de rutas.';
     });
   }
 }

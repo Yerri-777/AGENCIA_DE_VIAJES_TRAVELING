@@ -2,52 +2,63 @@
   <header class="dashboard-header">
     <div class="header-content">
       <h1>Panel Administrativo</h1>
-      <p>Gestión Global: Horizontes Sin Límites</p>
+      <p>Control Central de Horizontes Sin Límites</p>
     </div>
-    <div class="admin-badge">MODO ADMINISTRADOR</div>
+    <div class="header-right">
+      <div class="admin-badge">ADMINISTRADOR</div>
+      <button class="btn-salir" (click)="logout()" title="Finalizar sesión actual">
+        Cerrar Sesión
+      </button>
+    </div>
   </header>
 
   <div class="main-action">
-    <a class="hero-card" routerLink="/admin/carga-masiva">
+    <div class="hero-card" (click)="navegarA('/admin/carga-masiva')">
       <div class="hero-text">
-        <h3>Carga Inicial de Datos</h3>
-        <p>Importar archivo .txt (Usuarios, Destinos, Paquetes, Clientes...)</p>
+        <h3>Procesamiento de Archivos (.txt)</h3>
+        <p>Carga masiva de Usuarios, Destinos, Paquetes y Clientes al sistema.</p>
+        <div class="stats-mini">
+          <span>Actualizados: <strong>{{ totalPaquetes }}</strong> Paquetes | <strong>{{ totalClientes }}</strong> Clientes</span>
+        </div>
       </div>
-      <span class="btn-action">Iniciar Carga</span>
-    </a>
+      <span class="btn-action">Abrir Carga Masiva</span>
+    </div>
   </div>
 
   <div class="grid-cards">
-    <a class="admin-card" routerLink="/admin/usuarios">
+    <a class="admin-card" routerLink="/admin/usuarios" title="Gestionar personal">
+      <div class="card-icon icon-staff"></div>
       <div class="card-info">
         <h3>Administración de Personal</h3>
-        <p>Altas, bajas y cambio de roles (Agente/Operador)</p>
+        <p>Altas, bajas y gestión de  Usuarios (Agentes y Operadores).</p>
       </div>
     </a>
 
     <a class="admin-card" routerLink="/admin/reportes">
+      <div class="card-icon icon-finance"></div>
       <div class="card-info">
-        <h3>Reportes Finales</h3>
-        <p>Estadísticas y ventas globales</p>
+        <h3>Reportes e Indicadores</h3>
+        <p>Ventas, Cancelaciones, Ganancias y PDF Financieros.</p>
       </div>
     </a>
 
     <a class="admin-card" routerLink="/operaciones/paquetes">
+      <div class="card-icon icon-master"></div>
       <div class="card-info">
         <h3>Catálogo Maestro</h3>
-        <p>Supervisión de paquetes y destinos activos</p>
+        <p>Supervisión de disponibilidad y estados de paquetes activos.</p>
       </div>
     </a>
   </div>
 
   <footer class="admin-summary">
     <div class="stat-item">
-      <span class="label">Estado del Servidor:</span>
-      <span class="value online">En línea</span>
+      <span class="label">Última Sincronización:</span>
+      <span class="value">{{ ultimaCarga }}</span>
     </div>
     <div class="stat-item">
-      <span class="label">Última Carga:</span>
-      <span class="value">08/04/2026</span>
+      <span class="label">Sistema:</span>
+      <span class="value">System Jerry</span>
     </div>
   </footer>
 </section>

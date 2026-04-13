@@ -8,7 +8,7 @@ public class JsonUtil {
     private static final Gson gson = new Gson();
 
     public static void enviarComoJson(HttpServletResponse response, Object data) throws Exception {
-        // Solo definimos el tipo de contenido
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 

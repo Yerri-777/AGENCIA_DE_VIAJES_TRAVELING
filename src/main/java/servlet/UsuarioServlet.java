@@ -23,13 +23,12 @@ public class UsuarioServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        configurarHeaders(resp)
+        configurarHeaders(resp);    
 
         // Leer el body JSON
         String body = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         Usuario input = gson.fromJson(body, Usuario.class);
 
-        // La acción se puede pasar por query param: /login?action=register
         String action = req.getParameter("action");
 
         try {
@@ -57,7 +56,7 @@ public class UsuarioServlet extends HttpServlet {
             session.setAttribute("usuarioLogueado", user);
             session.setMaxInactiveInterval(30 * 60);
 
-            // Responder con un JSON ligero que el frontend espera: { nombre, rol, idUsuario }
+            
             java.util.Map<String, Object> respuesta = new java.util.HashMap<>();
             respuesta.put("nombre", user.getNombreUsuario());
             respuesta.put("rol", user.getRol() != null ? user.getRol().getIdRol() : null);

@@ -136,7 +136,7 @@ public class DestinoServlet extends HttpServlet {
     private void configurarHeaders(HttpServletResponse resp) {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        // Ensure explicit origin when credentials are used
+    
         resp.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
         resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
